@@ -19,16 +19,29 @@ int* create()
 int isOverflow_float(char* str)
 {
 	int isfloat = 0;
-	double num_double;
-	float num_float;
+    int Position_E = -1;
+
+    for(Position_E=0;Position_E<strlen(str);Position_E++)
+    {
+        if(str[Position_E] == 'E' | str[Position_E] == 'e')
+            break;
+    }
+    if(str[Position_E] != 'E' | str[Position_E] != 'e') // there is not 'E' or 'e' in the str
+        Position_E = -1;
+
 
 	if(str[strlen(str)-1] == 'f')
 		isfloat = 0;
-	
 	if(isfloat)
 	{	
 		str[strlen(str)-1] = '\0';
-		num_float = atof(str);
+        if(Position_E != -1)
+        {
+            if(str[Position_E+1] == '+' || (str[Position_E+1] <= '9' && str[Position_E+1] >= '0'))
+            {
+                
+            }
+        }
 	}
 }
 
@@ -86,5 +99,11 @@ int main()
     else
         printf("str9 is safe\n");
     
+    char* test = "\"test\\\"";
+    printf("%s\n", test);
+    printf("%c\n", test[strlen(test)-1]);
+    if(test[strlen(test)-2] == '\\')
+    printf("run\n");
+    printf("%c\n", test[strlen(test)-2]);
     
 }

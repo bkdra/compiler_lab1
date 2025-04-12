@@ -42,6 +42,8 @@ float [\+\-]?((([0-9]+)\.([0-9]+))|(\.([0-9]+))|([0-9]+\.)|[0-9]+)([eE][+-]?[0-9
 
 string \".*\"
 
+invalid_string (\'.*\')|(\".*\\\")|(\"[^\"\n]*)
+
 comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 
 %%
@@ -96,10 +98,6 @@ comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 		
 	charCount += yyleng;
 	isOperator = 1;
-	// +/-如果是數字之後、右括號之後 要被當成運算子
-	// 其餘狀況當成正負號
-
-	// int overflow
 }
 {float} {
 	if(isOperator)
@@ -122,12 +120,19 @@ comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 	else
 	{
 		printf("Line: %d, 1st char: %d, \"%s\" is an \"ID\".\n", lineCount, charCount, yytext);
-		charCount += yyleng;
-		// printf("inserted: %s\n", yytext);
 		insert(yytext);
 	}
+	charCount += yyleng;
 	isOperator = 1;
-	// 這邊要把identifier放到table中
+}
+{invalid_string} {
+	if(yytext[0] == '\'')
+		printf("\"%s\" is a wrong string. Cannot use (') as the quote of a string\n", yytext);
+	if((yytext[0] == '"' && yytext[strlen(yytext)-1] != '"') ||
+		(yytext[0] == '"' && yytext[strlen(yytext)-1] == '"' && yytext[strlen(yytext)-2] == '\\'))
+		printf("\"%s\" is a wrong string. The quoting is not closed.\n", yytext);
+	charCount += yyleng;
+	isOperator = 0;
 }
 {string} {
 	int isWrongString = 0;
@@ -146,14 +151,15 @@ comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 	if(!isWrongString)
 	{
 		printf("Line: %d, 1st char: %d, \"%s\" is a \"string\".\n", lineCount, charCount, yytext);
-		charCount += yyleng;
 	}
 	else
 	{	
 		printf("\"%s\" is a wrong string. Unvalid syntax of '\"'(Position: %d). \nIf you want to include '\"' in the string, you have to add '\\' immediately before it.", yytext, wrongPosition);
 	}
+	charCount += yyleng;
 	isOperator = 0;
 }
+
 {comment} {
 	printf("Line: %d, 1st char: %d, \"%s\" is a \"comment\".\n", lineCount, charCount, yytext);
 	charCount += yyleng;
@@ -175,8 +181,6 @@ int main(){
 
 int hashFunction_linear(char *s)
 {
-	// printf("start hashFunction\n");
-	
 	int hashValue = (int)s[0] * 80;
 
 	while(table[hashValue].order != emptyID.order)
@@ -185,24 +189,7 @@ int hashFunction_linear(char *s)
 		if(hashValue >= MAXSIZE)
 			hashValue--;
 	}
-	// printf("end hashFunction\n");
 	return hashValue;
-}
-
-int isOverflow_float(char* str)
-{
-	int isfloat = 0;
-	double num_double;
-	float num_float;
-
-	if(str[strlen(str)-1] == 'f')
-		isfloat = 0;
-	
-	if(isfloat)
-	{	
-		str[strlen(str)-1] = '\0';
-		num_float = atof(str);
-	}
 }
 
 int isOverflow_int(char *str)
@@ -250,42 +237,32 @@ int isOverflow_int(char *str)
 
 void create()
 {
-	// printf("start create\n");
 	table = (Identifier*)malloc(MAXSIZE*sizeof(Identifier));
 	
 	for(int i=0;i<MAXSIZE;i++)
 		table[i] = emptyID;
-	// printf("end create\n");
 }
 
 int lookup(char* s)
 {
-	// printf("start lookup\n");
 	int index = (int)s[0]*80;
 	int startIndex = index;
-	// printf("\nstartIndex: %d\n", startIndex);
 	int notFound = 1;
 
 	while(notFound && index != (startIndex-1))
 	{
 		if(table[index].order == emptyID.order || table[index].order != emptyID.order && strcmp(table[index].ID, s) != 0)
 		{
-		// 	if(table[index].ID != NULL)
-			// 	printf("table[%d].ID: %s\ts: %s\n", index, table[index].ID, s);
 			index++;
 			if(index == MAXSIZE)
 				index -= MAXSIZE;
 		}
 		else
 		{
-			// printf("notFound\n");
 			notFound = 0;
 		}
 			
 	}
-
-	// printf("end lookup\tnotFound: %d\n", notFound);
-	// printf("index: %d\n", index);
 	if(!notFound)
 		return index;
 	else
@@ -294,12 +271,9 @@ int lookup(char* s)
 
 void insert(char* s)
 {
-	// printf("start insert\n");
 	int isInserted = lookup(s);
-	// printf("isInserted: %d\n", isInserted);
 	if(isInserted != -1)
 		return;
-	// printf("run\n");
 	int index = hashFunction_linear(s);
 	if(previousIndex != -1)
 	{
