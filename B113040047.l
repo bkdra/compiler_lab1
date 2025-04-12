@@ -328,7 +328,7 @@ void dump()
 	int index = firstID;
 	while(curr != idCount)
 	{
-		printf("%d.  %s\n",table[index].order, table[index].ID);
+		printf("%d.  %s\n",table[index].order+1, table[index].ID);
 		curr++;
 		index = table[index].next;
 	}

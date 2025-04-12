@@ -16,16 +16,75 @@ int* create()
     return table;
 }
 
+int isOverflow_float(char* str)
+{
+	int isfloat = 0;
+	double num_double;
+	float num_float;
+
+	if(str[strlen(str)-1] == 'f')
+		isfloat = 0;
+	
+	if(isfloat)
+	{	
+		str[strlen(str)-1] = '\0';
+		num_float = atof(str);
+	}
+}
+
 int main()
 {
+    char *str1 = "2147483647";
+    char *str3 = "2147483648";
+    char *str2 = "2147483649";
+    char *str4 = "-2147483647";
+    char *str5 = "-2147483648";
+    char *str6 = "-2147483649";
+    char *str7 = "-11111111111";
+    char *str8 = "-1";
+    char *str9 = "1";
 
-    char* str = "te1\"123s";
-    char* result = strchr(str, '"');
-    int position = result - str;
-    printf("%d\n", -2- -3);
-    int* table = create();
-    printf("table 1st value: %d\n", table[0]);
-    printf("table 2nd value: %d\n", table[1]);
-    Identifier id1 = {1, "test"};
-    printf("ID1: %s\n", id1.ID);
+    if(isOverflow_float(str1))
+        printf("str1 is overflow\n");
+    else
+        printf("str1 is safe\n");
+    if(isOverflow_float(str2))
+        printf("str2 is overflow\n");
+    else
+        printf("str2 is safe\n");
+    if(isOverflow_float(str3))
+        printf("str3 is overflow\n");
+    else
+        printf("str3 is safe\n");
+
+    if(isOverflow_float(str4))
+        printf("str4 is overflow\n");
+    else
+        printf("str4 is safe\n");
+    if(isOverflow_float(str5))
+        printf("str5 is overflow\n");
+    else
+        printf("str5 is safe\n");
+    if(isOverflow_float(str6))
+        printf("str6 is overflow\n");
+    else
+        printf("str6 is safe\n");
+        if(isOverflow_float(str6))
+        printf("str6 is overflow\n");
+    else
+        printf("str6 is safe\n");
+    if(isOverflow_float(str7))
+        printf("str7 is overflow\n");
+    else
+        printf("str7 is safe\n");
+    if(isOverflow_float(str8))
+        printf("str8 is overflow\n");
+    else
+        printf("str8 is safe\n");
+    if(isOverflow_float(str9))
+        printf("str9 is overflow\n");
+    else
+        printf("str9 is safe\n");
+    
+    
 }
