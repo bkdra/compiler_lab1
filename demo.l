@@ -70,21 +70,7 @@ comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 	else
 		isOperator = 0;
 }
-{id} {
-	if(yytext[0] >= '0' && yytext[0] <= '9')
-	{
-		printf("%s is not a valid identifier, because it begin with a digit", yytext);
-	}
-	else
-	{
-		printf("Line: %d, 1st char: %d, \"%s\" is a \"ID\".\n", lineCount, charCount, yytext);
-		charCount += yyleng;
-		// printf("inserted: %s\n", yytext);
-		insert(yytext);
-	}
-	isOperator = 1;
-	// 這邊要把identifier放到table中
-}
+
 {int} {
 	if(isOperator)
 	{
@@ -102,22 +88,32 @@ comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 	// int overflow
 }
 {float} {
-	// 將非f結尾的float視為錯誤
-	if(yytext[strlen(yytext)-1] != 'f')
-		printf("%s is not a valid float, because a float is end with 'f'.\n", yytext);
-	else
+	if(isOperator)
 	{
-		if(isOperator)
-		{
-			printf("Line: %d, 1st char: %d, \"%c\" is a \"operator\".\n", lineCount, charCount, yytext[0]);
-			yytext++;
-			printf("Line: %d, 1st char: %d, \"%s\" is a \"float\".\n", lineCount, charCount+1, yytext);
-		}
-		else
-			printf("Line: %d, 1st char: %d, \"%s\" is a \"float\".\n", lineCount, charCount, yytext);
+		printf("Line: %d, 1st char: %d, \"%c\" is a \"operator\".\n", lineCount, charCount, yytext[0]);
+		yytext++;
+		printf("Line: %d, 1st char: %d, \"%s\" is a \"float\".\n", lineCount, charCount+1, yytext);
 	}
+	else
+		printf("Line: %d, 1st char: %d, \"%s\" is a \"float\".\n", lineCount, charCount, yytext);
+	
 	charCount += yyleng;
 	isOperator = 1;
+}
+{id} {
+	if(yytext[0] >= '0' && yytext[0] <= '9')
+	{
+		printf("%s is not a valid identifier, because it begin with a digit", yytext);
+	}
+	else
+	{
+		printf("Line: %d, 1st char: %d, \"%s\" is a \"ID\".\n", lineCount, charCount, yytext);
+		charCount += yyleng;
+		// printf("inserted: %s\n", yytext);
+		insert(yytext);
+	}
+	isOperator = 1;
+	// 這邊要把identifier放到table中
 }
 {string} {
 	int isWrongString = 0;

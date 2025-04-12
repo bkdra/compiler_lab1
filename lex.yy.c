@@ -363,24 +363,24 @@ struct yy_trans_info
 static const flex_int16_t yy_accept[181] =
     {   0,
         6,    6,   12,   11,    2,    3,    1,   11,    1,    5,
-        1,    1,   11,    1,    6,    6,    1,    1,    1,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6,    6,    6,    6,    6,   11,    1,    0,    9,    0,
-        7,    7,    1,    8,    0,   10,    8,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    4,
-        6,    6,    6,    6,    6,    6,    4,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6,    6,    0,    8,    7,    0,    0,    0,   10,    8,
-        0,    6,    6,    6,    6,    6,    6,    6,    6,    6,
+        1,    1,   11,    1,    6,    6,    1,    1,    1,    8,
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+        8,    8,    8,    8,    8,   11,    1,    0,    9,    0,
+        6,    6,    1,    7,    0,   10,    7,    6,    8,    8,
+        7,    6,    8,    8,    8,    8,    8,    8,    8,    4,
+        8,    8,    8,    8,    8,    8,    4,    8,    8,    8,
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+        8,    8,    0,    7,    6,    0,    0,    0,   10,    7,
+        0,    7,    6,    8,    8,    8,    8,    8,    8,    8,
 
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6,    6,    8,    7,    0,    0,   10,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-       10,    6,    6,    6,    6,    6,    4,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    0
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+        8,    8,    7,    6,    0,    0,   10,    8,    8,    8,
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+       10,    8,    8,    8,    8,    8,    4,    8,    8,    8,
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+        8,    8,    8,    8,    8,    8,    8,    8,    8,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -955,7 +955,44 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 73 "demo.l"
+#line 74 "demo.l"
+{
+	if(isOperator)
+	{
+		printf("Line: %d, 1st char: %d, \"%c\" is a \"operator\".\n", lineCount, charCount, yytext[0]);
+		yytext++;
+		printf("Line: %d, 1st char: %d, \"%s\" is a \"integer\".\n", lineCount, charCount+1, yytext);
+	}
+	else
+		printf("Line: %d, 1st char: %d, \"%s\" is a \"integer\".\n", lineCount, charCount, yytext);
+	charCount += yyleng;
+	isOperator = 1;
+	// +/-如果是數字之後、右括號之後 要被當成運算子
+	// 其餘狀況當成正負號
+
+	// int overflow
+}
+	YY_BREAK
+case 7:
+YY_RULE_SETUP
+#line 90 "demo.l"
+{
+	if(isOperator)
+	{
+		printf("Line: %d, 1st char: %d, \"%c\" is a \"operator\".\n", lineCount, charCount, yytext[0]);
+		yytext++;
+		printf("Line: %d, 1st char: %d, \"%s\" is a \"float\".\n", lineCount, charCount+1, yytext);
+	}
+	else
+		printf("Line: %d, 1st char: %d, \"%s\" is a \"float\".\n", lineCount, charCount, yytext);
+	
+	charCount += yyleng;
+	isOperator = 1;
+}
+	YY_BREAK
+case 8:
+YY_RULE_SETUP
+#line 103 "demo.l"
 {
 	if(yytext[0] >= '0' && yytext[0] <= '9')
 	{
@@ -972,49 +1009,9 @@ YY_RULE_SETUP
 	// 這邊要把identifier放到table中
 }
 	YY_BREAK
-case 7:
-YY_RULE_SETUP
-#line 88 "demo.l"
-{
-	if(isOperator)
-	{
-		printf("Line: %d, 1st char: %d, \"%c\" is a \"operator\".\n", lineCount, charCount, yytext[0]);
-		yytext++;
-		printf("Line: %d, 1st char: %d, \"%s\" is a \"integer\".\n", lineCount, charCount+1, yytext);
-	}
-	else
-		printf("Line: %d, 1st char: %d, \"%s\" is a \"integer\".\n", lineCount, charCount, yytext);
-	charCount += yyleng;
-	isOperator = 1;
-	// +/-如果是數字之後、右括號之後 要被當成運算子
-	// 其餘狀況當成正負號
-}
-	YY_BREAK
-case 8:
-YY_RULE_SETUP
-#line 102 "demo.l"
-{
-	// 將非f結尾的float視為錯誤
-	if(yytext[strlen(yytext)-1] != 'f')
-		printf("%s is not a valid float, because a float is end with 'f'.\n", yytext);
-	else
-	{
-		if(isOperator)
-		{
-			printf("Line: %d, 1st char: %d, \"%c\" is a \"operator\".\n", lineCount, charCount, yytext[0]);
-			yytext++;
-			printf("Line: %d, 1st char: %d, \"%s\" is a \"float\".\n", lineCount, charCount+1, yytext);
-		}
-		else
-			printf("Line: %d, 1st char: %d, \"%s\" is a \"float\".\n", lineCount, charCount, yytext);
-	}
-	charCount += yyleng;
-	isOperator = 1;
-}
-	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 120 "demo.l"
+#line 118 "demo.l"
 {
 	int isWrongString = 0;
 	int wrongPosition = 0;
@@ -1044,7 +1041,7 @@ YY_RULE_SETUP
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 145 "demo.l"
+#line 143 "demo.l"
 {
 	printf("Line: %d, 1st char: %d, \"%s\" is a \"comment\".\n", lineCount, charCount, yytext);
 	charCount += yyleng;
@@ -1058,10 +1055,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 156 "demo.l"
+#line 154 "demo.l"
 ECHO;
 	YY_BREAK
-#line 1065 "lex.yy.c"
+#line 1062 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2066,7 +2063,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 156 "demo.l"
+#line 154 "demo.l"
 
 int main(){
 	create();
