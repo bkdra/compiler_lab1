@@ -34,7 +34,7 @@ reserved_word boolean|break|bute|case|catch|class|const|continue|default|do|doub
 
 symbol [,:;\(\)\[\]\{\}]
 
-id [_a-zA-Z0-9]* 
+id [_a-zA-Z0-9$]* 
 
 int [+-]?(([0-9]*)|0x[0-9A-F]*)
 
@@ -82,7 +82,7 @@ comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 			printf("%s is not a valid integer, because it overflows\n", yytext);
 		}
 		else
-			printf("Line: %d, 1st char: %d, \"%s\" is a \"integer\".\n", lineCount, charCount+1, yytext);
+			printf("Line: %d, 1st char: %d, \"%s\" is an \"integer\".\n", lineCount, charCount+1, yytext);
 	}
 	else
 	{
@@ -91,7 +91,7 @@ comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 			printf("%s is not a valid integer, because it overflows\n", yytext);
 		}
 		else
-			printf("Line: %d, 1st char: %d, \"%s\" is a \"integer\".\n", lineCount, charCount, yytext);
+			printf("Line: %d, 1st char: %d, \"%s\" is an \"integer\".\n", lineCount, charCount, yytext);
 	}
 		
 	charCount += yyleng;
@@ -115,13 +115,13 @@ comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 	isOperator = 1;
 }
 {id} {
-	if(yytext[0] >= '0' && yytext[0] <= '9')
+	if(yytext[0] >= '0' && yytext[0] <= '9' || yytext[0] == '$')
 	{
 		printf("%s is not a valid identifier, because it begin with a digit\n", yytext);
 	}
 	else
 	{
-		printf("Line: %d, 1st char: %d, \"%s\" is a \"ID\".\n", lineCount, charCount, yytext);
+		printf("Line: %d, 1st char: %d, \"%s\" is an \"ID\".\n", lineCount, charCount, yytext);
 		charCount += yyleng;
 		// printf("inserted: %s\n", yytext);
 		insert(yytext);

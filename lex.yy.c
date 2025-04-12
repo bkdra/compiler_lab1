@@ -967,7 +967,7 @@ YY_RULE_SETUP
 			printf("%s is not a valid integer, because it overflows\n", yytext);
 		}
 		else
-			printf("Line: %d, 1st char: %d, \"%s\" is a \"integer\".\n", lineCount, charCount+1, yytext);
+			printf("Line: %d, 1st char: %d, \"%s\" is an \"integer\".\n", lineCount, charCount+1, yytext);
 	}
 	else
 	{
@@ -976,7 +976,7 @@ YY_RULE_SETUP
 			printf("%s is not a valid integer, because it overflows\n", yytext);
 		}
 		else
-			printf("Line: %d, 1st char: %d, \"%s\" is a \"integer\".\n", lineCount, charCount, yytext);
+			printf("Line: %d, 1st char: %d, \"%s\" is an \"integer\".\n", lineCount, charCount, yytext);
 	}
 		
 	charCount += yyleng;
@@ -1014,7 +1014,7 @@ YY_RULE_SETUP
 	}
 	else
 	{
-		printf("Line: %d, 1st char: %d, \"%s\" is a \"ID\".\n", lineCount, charCount, yytext);
+		printf("Line: %d, 1st char: %d, \"%s\" is an \"ID\".\n", lineCount, charCount, yytext);
 		charCount += yyleng;
 		// printf("inserted: %s\n", yytext);
 		insert(yytext);
