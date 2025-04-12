@@ -8,5 +8,4 @@ public class OwnTest4 {
         int e = (12-34)-56;
         int f = e+65;
     }
-
 }

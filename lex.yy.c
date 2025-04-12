@@ -937,20 +937,20 @@ case 6:
 YY_RULE_SETUP
 #line 77 "B113040047.l"
 {
-	if(isOperator)
+	if(isOperator) // 代表+/-是operator並非正負號
 	{
 		printf("Line: %d, 1st char: %d, \"%c\" is a \"operator\".\n", lineCount, charCount, yytext[0]);
 		yytext++;
-		if(isOverflow_int(yytext))
+		if(isOverflow_int(yytext)) // 進行overflow的判斷
 		{
 			printf("%s is not a valid integer, because it overflows\n", yytext);
 		}
 		else
 			printf("Line: %d, 1st char: %d, \"%s\" is an \"integer\".\n", lineCount, charCount+1, yytext);
 	}
-	else
+	else // 代表+/-是正負號並非operator
 	{
-		if(isOverflow_int(yytext))
+		if(isOverflow_int(yytext)) // 進行overflow的判斷
 		{
 			printf("%s is not a valid integer, because it overflows\n", yytext);
 		}
@@ -960,23 +960,19 @@ YY_RULE_SETUP
 		
 	charCount += yyleng;
 	isOperator = 1;
-	// +/-如果是數字之後、右括號之後 要被當成運算子
-	// 其餘狀況當成正負號
-
-	// int overflow
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 106 "B113040047.l"
+#line 102 "B113040047.l"
 {
-	if(isOperator)
+	if(isOperator) // 代表+/-是operator並非正負號
 	{
 		printf("Line: %d, 1st char: %d, \"%c\" is a \"operator\".\n", lineCount, charCount, yytext[0]);
 		yytext++;
 		printf("Line: %d, 1st char: %d, \"%s\" is a \"float\".\n", lineCount, charCount+1, yytext);
 	}
-	else
+	else // 代表+/-是正負號並非operator
 		printf("Line: %d, 1st char: %d, \"%s\" is a \"float\".\n", lineCount, charCount, yytext);
 	
 	charCount += yyleng;
@@ -985,8 +981,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 119 "B113040047.l"
+#line 115 "B113040047.l"
 {
+	// 把非英文字母開頭或底線開頭的id挑出來
 	if(yytext[0] >= '0' && yytext[0] <= '9' || yytext[0] == '$')
 	{
 		printf("%s is not a valid identifier, because it begin with a digit\n", yytext);
@@ -994,18 +991,17 @@ YY_RULE_SETUP
 	else
 	{
 		printf("Line: %d, 1st char: %d, \"%s\" is an \"ID\".\n", lineCount, charCount, yytext);
-		// printf("inserted: %s\n", yytext);
 		insert(yytext);
 	}
 	charCount += yyleng;
 	isOperator = 1;
-	// 這邊要把identifier放到table中
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 134 "B113040047.l"
+#line 129 "B113040047.l"
 {
+	// 把不合法的string挑出來，包含以單引號包起來的、結尾非雙引號的
 	if(yytext[0] == '\'')
 		printf("\"%s\" is a wrong string. Cannot use (') as the quote of a string\n", yytext);
 	if((yytext[0] == '"' && yytext[strlen(yytext)-1] != '"') ||
@@ -1017,13 +1013,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 143 "B113040047.l"
+#line 139 "B113040047.l"
 {
 	int isWrongString = 0;
 	int wrongPosition = 0;
 	yytext[strlen(yytext)-1] = '\0';
 	yytext++;
-	for(int i=0;i<strlen(yytext);i++)
+	for(int i=0;i<strlen(yytext);i++) // 把string中包含雙引號,但沒有用反斜線使其跳脫的string挑出來
 	{
 		if(yytext[i] == '"' && i!=0 && yytext[i-1] != '\\')
 		{
@@ -1038,7 +1034,7 @@ YY_RULE_SETUP
 	}
 	else
 	{	
-		printf("\"%s\" is a wrong string. Unvalid syntax of '\"'(Position: %d). \nIf you want to include '\"' in the string, you have to add '\\' immediately before it.", yytext, wrongPosition);
+		printf("\"%s\" is a wrong string. Unvalid syntax of '\"'(Position: %d). \nIf you want to include '\"' in the string, you have to add '\\' immediately before it.\n", yytext, wrongPosition);
 	}
 	charCount += yyleng;
 	isOperator = 0;
@@ -1047,7 +1043,7 @@ YY_RULE_SETUP
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 169 "B113040047.l"
+#line 165 "B113040047.l"
 {
 	printf("Line: %d, 1st char: %d, \"%s\" is a \"comment\".\n", lineCount, charCount, yytext);
 	charCount += yyleng;
@@ -1061,10 +1057,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 180 "B113040047.l"
+#line 176 "B113040047.l"
 ECHO;
 	YY_BREAK
-#line 1068 "lex.yy.c"
+#line 1064 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2069,7 +2065,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 180 "B113040047.l"
+#line 176 "B113040047.l"
 
 int main(){
 	create();
@@ -2080,8 +2076,6 @@ int main(){
 
 int hashFunction_linear(char *s)
 {
-	// printf("start hashFunction\n");
-	
 	int hashValue = (int)s[0] * 80;
 
 	while(table[hashValue].order != emptyID.order)
@@ -2090,24 +2084,7 @@ int hashFunction_linear(char *s)
 		if(hashValue >= MAXSIZE)
 			hashValue--;
 	}
-	// printf("end hashFunction\n");
 	return hashValue;
-}
-
-int isOverflow_float(char* str)
-{
-	int isfloat = 0;
-	double num_double;
-	float num_float;
-
-	if(str[strlen(str)-1] == 'f')
-		isfloat = 0;
-	
-	if(isfloat)
-	{	
-		str[strlen(str)-1] = '\0';
-		num_float = atof(str);
-	}
 }
 
 int isOverflow_int(char *str)
@@ -2155,42 +2132,32 @@ int isOverflow_int(char *str)
 
 void create()
 {
-	// printf("start create\n");
 	table = (Identifier*)malloc(MAXSIZE*sizeof(Identifier));
 	
 	for(int i=0;i<MAXSIZE;i++)
 		table[i] = emptyID;
-	// printf("end create\n");
 }
 
 int lookup(char* s)
 {
-	// printf("start lookup\n");
 	int index = (int)s[0]*80;
 	int startIndex = index;
-	// printf("\nstartIndex: %d\n", startIndex);
 	int notFound = 1;
 
 	while(notFound && index != (startIndex-1))
 	{
 		if(table[index].order == emptyID.order || table[index].order != emptyID.order && strcmp(table[index].ID, s) != 0)
 		{
-		// 	if(table[index].ID != NULL)
-			// 	printf("table[%d].ID: %s\ts: %s\n", index, table[index].ID, s);
 			index++;
 			if(index == MAXSIZE)
 				index -= MAXSIZE;
 		}
 		else
 		{
-			// printf("notFound\n");
 			notFound = 0;
 		}
 			
 	}
-
-	// printf("end lookup\tnotFound: %d\n", notFound);
-	// printf("index: %d\n", index);
 	if(!notFound)
 		return index;
 	else
@@ -2199,12 +2166,9 @@ int lookup(char* s)
 
 void insert(char* s)
 {
-	// printf("start insert\n");
 	int isInserted = lookup(s);
-	// printf("isInserted: %d\n", isInserted);
 	if(isInserted != -1)
 		return;
-	// printf("run\n");
 	int index = hashFunction_linear(s);
 	if(previousIndex != -1)
 	{
