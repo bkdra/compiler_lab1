@@ -44,7 +44,7 @@ string \".*\"
 
 invalid_string (\'.*\')|(\".*\\\")|(\"[^\"\n]*)
 
-comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
+comment \/\/.*|\/\*([^*]|\*+[^*/])*\*+\/
 
 %%
 {operator} {
@@ -116,7 +116,7 @@ comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 	// 把非英文字母開頭或底線開頭的id挑出來
 	if(yytext[0] >= '0' && yytext[0] <= '9' || yytext[0] == '$')
 	{
-		printf("%s is not a valid identifier, because it begin with a digit\n", yytext);
+		printf("%s is not a valid identifier, because it does not begin with a letter or an underline\n", yytext);
 	}
 	else
 	{
@@ -141,13 +141,22 @@ comment \/\*.*\*\/|\/\*.*(\n.*)*\*\/|\/\/.*
 	int wrongPosition = 0;
 	yytext[strlen(yytext)-1] = '\0';
 	yytext++;
-	for(int i=0;i<strlen(yytext);i++) // 把string中包含雙引號,但沒有用反斜線使其跳脫的string挑出來
+	int yytext_len = strlen(yytext);
+	for(int i=0;i<yytext_len;i++) // 把string中包含雙引號,但沒有用反斜線使其跳脫的string挑出來
 	{
 		if(yytext[i] == '"' && i!=0 && yytext[i-1] != '\\')
 		{
 			isWrongString = 1;
 			wrongPosition = i;
 			break;
+		}
+		else if(yytext[i] == '"' && i!=0 && yytext[i-1] == '\\')
+		{
+			for(int j=i-1;j<yytext_len-2;j++)
+			{
+				yytext[j] = yytext[j+1];
+			}
+			yytext_len--;
 		}
 	}
 	if(!isWrongString)
